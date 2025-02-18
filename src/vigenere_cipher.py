@@ -84,10 +84,11 @@ def vigeneres_cipher():
                       "\nType 'q' or 'Q' to exit: ").upper()
     if selection == "E":
         encrypt_message()
-    if selection == "D":
+    elif selection == "D":
         decrypt_message()
-    if selection == "Q":
+    elif selection == "Q":
         print("Exiting the program")
+        #exit()
     else:
         print("Invalid input...")
         vigeneres_cipher()

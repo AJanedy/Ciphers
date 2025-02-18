@@ -148,20 +148,27 @@ unpacked_messages = []
 
 common_words = ['there', 'the', 'is', 'are', 'we', 'hello', 'this', 'that', 'it', 'how', 'what', 'when', 'you',
                 'to', 'be', 'have', 'with', 'from', 'they', 'not', 'as', 'on', 'of', 'and', 'in', 'for', 'do',
-                'or', 'say', 'them', 'he', 'her', 'she', 'his', 'him', 'them', 'by']
+                'or', 'say', 'them', 'he', 'her', 'she', 'his', 'him', 'them', 'by', 'who']
 
 
 def print_step_one():
     print(
         """
 ===================================================================================================
-                    Step 1: Reconstruct the ciphertext into a matrix.
+Step 1: Reconstruct the ciphertext into a matrix.
 ===================================================================================================
             """
     )
+    input("Press enter to continue...\n")
+    print(f"Generating {ROWS}x{COLUMNS} matrix from {CIPHERTEXT}...\n")
 
 
 def ciphertext_to_matrix():
+    """
+    Converts a string (ciphertext message) into a numpy array of size [ROWS, COLUMNS]
+
+    :return: np.array
+    """
     print_step_one()
     # Convert ciphertext to matrix using numpy's .array function
     matrix = np.array(list(CIPHERTEXT)).reshape(ROWS, COLUMNS)
@@ -179,21 +186,32 @@ Step 2: Find the row that contains the letters necessary to build the known word
 ===================================================================================================
             """
     )
+    input("Press enter to continue...\n")
 
 
 def find_rows_containing_all_letters(matrix):
+    """
+    Processes the passed matrix and compares it against a string (global constant "THERE").
+    Returns a list containing the index of every row containing all the letters needed to
+    build the word in the string constant.
+
+    :param matrix:
+    :return: list[int]
+    """
     print_step_two()
-    word_counter = Counter(THERE)
+    word_counter = Counter(THERE)  # Counts letters in string constant
     matching_rows = []
 
+    # Check each row in matrix to see if it contains all letters to build string constant
+    # If row contains all letters, add it to matching_rows
     for row_number, row in enumerate(cipher_matrix):
         row_string = ''.join(row)
-        row_counter = Counter(row_string)
+        row_counter = Counter(row_string)  # Counts letters in ciphertext substring
 
         if all(row_counter[char] >= word_counter[char] for char in word_counter):
             matching_rows.append(row_number)
 
-    print(f"Finding rows that contain all letters needed to build the word {THERE}")
+    print(f"Finding rows that contain all letters needed to build the word {THERE}:\n")
     print(f"    Matching row by index(es): "
           f"{['Row {0}: {1}'.format(row, ''.join(map(str, matrix[row]))) for row in matching_rows]}")
 
@@ -208,15 +226,31 @@ Step 3: Find all column permutations that result in the first word "THERE"
 ===================================================================================================
             """
     )
+    input("Press enter to continue...\n")
 
 
 def find_valid_column_permutations(matrix_row_index):
+    """
+    Root method for completing all column permutations.  This method will:
+        * Get the indexes of all the letters in the row that match the letters
+          in the string constant
+        * Transpose the 1 to 1 matches (one instance of the letter in both the
+          row of the source matrix [substring] and one instance of the letter
+          in the string constant.
+        * Find all possible permutations for the letter 'E' columns
+        * Completes all possible column permutations, accounting for the
+          provided constraints.
+    :param matrix_row_index:
+    :return:
+    """
     print_step_three()
+    # Find the column index for the matching letters
     letter_positions = find_indexes_of_matching_letters(matrix_row_index)
+    # Place known characters that only occur once in their known location
     transpose_one_to_one_matches(letter_positions)
     e_positions = get_remaining_indexes(letter_positions)
     valid_e_permutations = get_valid_permutations(e_positions)
-    find_valid_transpositions(valid_e_permutations)
+    find_valid_transpositions(valid_e_permutations)  # Complete final column transpositions
 
 
 def find_indexes_of_matching_letters(matrix_row_index):
@@ -252,6 +286,9 @@ def get_remaining_indexes(letter_positions):
 def get_valid_permutations(e_positions):
     # Generate all valid permutations where 'E' is at indexes 2 & 4, and 'R' at index 3
     valid_e_permutations = list(permutations(e_positions, 2))  # E at [2,4]
+    input("Finding all valid permutations of 'E' (use known indexes for E\n"
+          "in the cipher matrix to find all possible matrix combinations).\n\n"
+          "Press enter to continue...\n")
     print(f"\nValid 'E' permutations: {valid_e_permutations}\n")
     return valid_e_permutations
 
@@ -268,8 +305,6 @@ def find_valid_transpositions(e_permutations):
 
     get_penultimate_matrices(list_of_matrices_with_there_as_first_word, penultimate_matrices)
 
-    # print_penultimate_matrices(penultimate_matrices)
-
 
 def print_penultimate_matrices(penultimate_matrices):
     print("Printing penultimate matrices:\n")
@@ -281,6 +316,11 @@ def print_penultimate_matrices(penultimate_matrices):
 
 
 def get_penultimate_matrices(list_of_matrices_with_there_as_first_word, penultimate_matrices):
+    input("Using these 12 matrices, we can apply for each the 5! permutations of the remaining \n"
+          "5 columns.  Because there are 12 source matrices and each will have 5! permutations, \n"
+          "we can expect to see a resulting set of 1440 possible permutations after all \n"
+          "column transpositions are completed.\n\n"
+          "Press enter to continue...\n")
     print("Creating list of matrices that include all permutations where 'THERE' is the first word")
     for matrix in list_of_matrices_with_there_as_first_word:
         columns = [list(col) for col in zip(*matrix)]  # Transpose rows -> columns
@@ -338,11 +378,6 @@ def process_r_permutations(first_transposed_matrices, list_of_matrices_with_ther
     for matrix in first_transposed_matrices:
         # Find index of 'R' in target row
         source_columns = [i for i, char in enumerate(matrix[2]) if char == 'R']
-        # print(f"Index(es) of 'R' in following matrix: {source_columns}\n")
-        #
-        # for row in matrix:
-        #     print(*row)
-        # print()
 
         for source_column in source_columns:
             copy_matrix = matrix.copy()
@@ -393,6 +428,7 @@ Step 4: Move "THERE" to top row, find all permutations of remaining 6 rows
 ===================================================================================================
             """
     )
+    input("Press enter to continue...\n")
 
 
 def move_there_to_top(matrices: list):
@@ -459,10 +495,15 @@ def print_step_six():
     print(
         """
 ===================================================================================================
-Step 6: Compare unpacked messages to see if they contain likely words
+Step 6: Compare unpacked messages to see if they contain common words
 ===================================================================================================
             """
     )
+    print("Checking all ciphertext permutations against a list of common \n"
+          "words.  'Decrypted' messages will be flagged as likely candidates \n"
+          "for the correct decryption if they meet a minimum threshold of \n"
+          "word matches.  A short list of the most likely correct messages \n"
+          "will be displayed to the terminal...\n")
 
 
 def is_likely_message(string, threshold):
@@ -514,8 +555,8 @@ def run_double_transposition_decryption():
     print_program_prompt()
 
     cipher_matrix = ciphertext_to_matrix()  # Create source ciphertext matrix
-    matched_rows = find_rows_containing_all_letters(cipher_matrix)  # Find rows containing the necessary letters
 
+    matched_rows = find_rows_containing_all_letters(cipher_matrix)  # Find rows containing the necessary letters
     # Entry point for first half of decryption.  This is designed only to work on one row_index, program
     # is not proven with multiple rows containing all key letter matches.  find_valid_column_permutations()
     # will find all 1440 permutations where 'THERE' is the first word in the third row (index 2) of the
@@ -542,27 +583,26 @@ def run_double_transposition_decryption():
     # discovered words
     likely_messages = search_likely_messages(unpacked_messages, threshold=10)
 
-    print("Filtered likely messages:")
     # As our filtered list of possible plaintext messages becomes more targeted, we can start
     # to isolate likely words found in the text.  We then use these new keywords to further
     # isolate the most likely decrypted message
     found_likely_words = ["FUTURE", "COMMUNISM", "WAVE", "BERLIN", "SOME", "WHO", "SAY"]
     most_likely_plaintext = []
+    print("Filtered likely messages:\n")
     for message, matched_words in likely_messages:
         if all(word in message for word in found_likely_words):
-            print(f"{message}, Matched words: {len(matched_words)}")
-
-            if len(matched_words) == 14:
+            if len(matched_words) >= 14:
                 most_likely_plaintext.append(message)
 
-    print("\nMost likely plaintext messages:")
+    print("\nMost likely plaintext messages:\n")
     for message in most_likely_plaintext:
         print(message)
 
-    all_words = found_likely_words + common_words
-    for word in all_words:
-        message = most_likely_plaintext[-1].replace(word, word + " ")
-    print(f"\n{message}")
+    input("\nWhen you think you have found the correct decryption, press enter...\n")
+
+    message = most_likely_plaintext[-1]
+
+    print(f"Decrypted message:\n\n    {message}\n")
 
 
 def print_program_prompt():
