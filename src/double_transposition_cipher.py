@@ -254,6 +254,15 @@ def find_valid_column_permutations(matrix_row_index):
 
 
 def find_indexes_of_matching_letters(matrix_row_index):
+    """
+    Takes the passed in row substring and creates a list that contains
+    the letters that match with the string constant 'THERE', then creates
+    a dictionary with the char as the key, and a list of those chars as
+    the value.
+
+    :param matrix_row_index:
+    :return: dict{char:list[]}
+    """
     row = cipher_matrix[matrix_row_index]
     print(f"Analyzing row with index {matrix_row_index}: {''.join(row)}\n")
     # Find the positions of the target word's letters in the row
