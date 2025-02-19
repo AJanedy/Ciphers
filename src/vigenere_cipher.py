@@ -79,6 +79,12 @@ ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 def vigeneres_cipher():
+    """
+    Program prompt method; this is used to access the necessary methods
+    based on user input.
+
+    :return:
+    """
     print("\nRunning Vigenere's cipher")
     selection = input("\nWould you like to encrypt (type 'e' or 'E') or decrypt (type 'd' or 'D') a message?"
                       "\nType 'q' or 'Q' to exit: ").upper()
@@ -88,24 +94,33 @@ def vigeneres_cipher():
         decrypt_message()
     elif selection == "Q":
         print("Exiting the program")
-        #exit()
     else:
         print("Invalid input...")
         vigeneres_cipher()
 
 
 def encrypt_message():
-    plaintext = get_plaintext()
-    key = get_key()
-    plaintext_length = len(plaintext)
-    repeating_key = get_repeating_key(key, plaintext_length)
-    ciphertext = encrypt_with_vigenere(plaintext, repeating_key)
+    """
+    Entry point for user selection of encrypting a message
+
+    :return:
+    """
+    plaintext = get_plaintext()  # Ask user for plaintext message
+    key = get_key()  # Ask user for key
+    plaintext_length = len(plaintext)  # Get length of plaintext message
+    repeating_key = get_repeating_key(key, plaintext_length)  # Adjust key to fit plaintext length
+    ciphertext = encrypt_with_vigenere(plaintext, repeating_key)  # Encrypt message
     print(f"Encrypted message: {ciphertext}")
     vigeneres_cipher()
 
 
 def get_plaintext():
-    plaintext = input("What is the message you would like to encrypt?: ").upper()
+    """
+    Ask user for the message they want to encrypt/decrypt
+
+    :return plaintext:
+    """
+    plaintext = input("What is the message you would like to encrypt/decrypt?: ").upper()
     if not plaintext.isalpha():
         print("Message must only include letters.  No punctuation, whitespace, or digits...")
         encrypt_message()
@@ -114,6 +129,9 @@ def get_plaintext():
 
 
 def get_key():
+    """
+    Ask the user for the key used to encrypt/decrypt a message
+    """
     key = input("What is the key to encrypt/decrypt the message?: ")
     if not key.isalpha():
         print("Key must only include letters.  No punctuation, whitespace, or digits...")
@@ -123,6 +141,14 @@ def get_key():
 
 
 def get_repeating_key(key: str, target_length: int):
+    """
+    Takes the length of the message and appends the key to itself
+    until it matches the length of the message
+
+    :param key:
+    :param target_length:
+    :return string:
+    """
     # target_lenth // len(key) calculates how many full copies of the key
     # are need to reach the target length.  We add 1 to ensure that the
     # repeated string is as long (or even exceeds) the target length.
@@ -133,6 +159,13 @@ def get_repeating_key(key: str, target_length: int):
 
 
 def encrypt_with_vigenere(plaintext, repeating_key):
+    """
+    Perform encryption using Vigenere's cipher
+
+    :param plaintext:
+    :param repeating_key:
+    :return encrypted message:
+    """
     encrypted_message = ""
     # Enumerate through plaintext message
     for index, letter in enumerate(plaintext):
@@ -149,25 +182,28 @@ def encrypt_with_vigenere(plaintext, repeating_key):
 
 
 def decrypt_message():
-    ciphertext = get_encrypted_message()
-    key = get_key()
-    encrypted_message_length = len(ciphertext)
-    repeating_key = get_repeating_key(key, encrypted_message_length)
-    plaintext = decrypt_with_vigenere(ciphertext, repeating_key)
+    """
+    Entry point for user selection of decrypt message
+
+    :return:
+    """
+    ciphertext = get_plaintext()  # Ask user for encrypted message
+    key = get_key()  # Ask user for key
+    encrypted_message_length = len(ciphertext)  # Get length of encrypted message
+    repeating_key = get_repeating_key(key, encrypted_message_length)  # Adjust key to fit plaintext length
+    plaintext = decrypt_with_vigenere(ciphertext, repeating_key)  # Decrypt message
     print(f"Decrypted message: {plaintext}")
     vigeneres_cipher()
 
 
-def get_encrypted_message():
-    encrypted_message = input("What is the message you would like to decrypt?: ").upper()
-    if not encrypted_message.isalpha():
-        print("Message must only include letters.  No punctuation, whitespace, or digits...")
-        decrypt_message()
-    else:
-        return encrypted_message
-
-
 def decrypt_with_vigenere(ciphertext, repeating_key):
+    """
+    Perform decryption using Vigenere's cipher
+
+    :param ciphertext:
+    :param repeating_key:
+    :return:
+    """
     decrypted_message = ""
     # Enumerate through plaintext message
     for index, letter in enumerate(ciphertext):
